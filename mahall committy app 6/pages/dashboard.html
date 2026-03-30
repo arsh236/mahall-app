@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Mahall Management</title>
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+  <div class="app-wrapper">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="d-flex align-items-center mb-4">
+        <i class="fas fa-mosque fa-2x text-primary me-2"></i>
+        <h4 class="fw-bold mb-0">MAHALL</h4>
+      </div>
+      
+      <nav class="nav flex-column">
+        <a href="dashboard.html" class="nav-link active"><i class="fas fa-chart-line"></i> Dashboard</a>
+        <a href="members.html" class="nav-link"><i class="fas fa-users"></i> Members</a>
+        <a href="payments.html" class="nav-link"><i class="fas fa-hand-holding-dollar"></i> Payments</a>
+        <a href="expenses.html" class="nav-link"><i class="fas fa-file-invoice-dollar"></i> Expenses</a>
+        <a href="settings.html" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+        <div id="superAdminLink"></div>
+      </nav>
+      
+      <hr class="my-4 opacity-10">
+      
+      <button class="btn btn-outline-danger w-100" onclick="utils.logout()">
+        <i class="fas fa-sign-out-alt me-2"></i> Logout
+      </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Navbar -->
+      <nav class="navbar navbar-expand navbar-light bg-transparent p-0 mb-4">
+        <div class="container-fluid">
+          <h4 id="pageTitle" class="fw-bold">Dashboard</h4>
+          <div class="ms-auto d-flex align-items-center">
+            <span class="me-3 d-none d-md-inline" id="userNameDisplay">Welcome</span>
+            <div class="avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+              <i class="fas fa-user-circle fa-lg"></i>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Mobile Bottom Nav -->
+      <div class="bottom-nav d-md-none">
+        <a href="dashboard.html" class="nav-link active"><i class="fas fa-chart-line"></i> Dashboard</a>
+        <a href="members.html" class="nav-link"><i class="fas fa-users"></i> Members</a>
+        <a href="payments.html" class="nav-link"><i class="fas fa-hand-holding-dollar"></i> Payments</a>
+        <a href="expenses.html" class="nav-link"><i class="fas fa-file-invoice-dollar"></i> Expenses</a>
+        <a href="settings.html" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+        <div id="superAdminLinkMobile"></div>
+      </div>
+
+      <!-- Expired Warning -->
+      <div id="expiryWarning" class="alert alert-warning d-none">
+        <i class="fas fa-exclamation-triangle me-2"></i> Your subscription has expired. Please contact support.
+      </div>
+
+      <!-- Dashboard Stats -->
+      <div class="row g-4 mb-4" id="statsRow">
+        <div class="col-md-3">
+          <div class="card card-glass stat-card">
+            <div class="stat-label">Total Members</div>
+            <div class="stat-value" id="statMembers">...</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card card-glass stat-card border-start border-success border-4">
+            <div class="stat-label">Payments</div>
+            <div class="stat-value text-success" id="statPayments">...</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card card-glass stat-card border-start border-danger border-4">
+            <div class="stat-label">Expenses</div>
+            <div class="stat-value text-danger" id="statExpenses">...</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card card-glass stat-card border-start border-primary border-4">
+            <div class="stat-label">Balance</div>
+            <div class="stat-value" id="statBalance">...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Trends -->
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="card card-glass h-100">
+            <div class="card-header bg-transparent border-0 pt-4 px-4 d-flex">
+              <h5 class="fw-bold mb-0">Recent Payments</h5>
+              <a href="payments.html" class="ms-auto btn btn-sm btn-link">View All</a>
+            </div>
+            <div class="card-body px-4 pb-4">
+              <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="recentPaymentsTable">
+                  <thead><tr><th>Date</th><th>Amount</th><th>Type</th></tr></thead>
+                  <tbody><tr><td colspan="3" class="text-center py-4">Loading...</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card card-glass h-100">
+            <div class="card-header bg-transparent border-0 pt-4 px-4 d-flex">
+              <h5 class="fw-bold mb-0">Recent Expenses</h5>
+              <a href="expenses.html" class="ms-auto btn btn-sm btn-link">View All</a>
+            </div>
+            <div class="card-body px-4 pb-4">
+              <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="recentExpensesTable">
+                  <thead><tr><th>Date</th><th>Amount</th><th>Title</th></tr></thead>
+                  <tbody><tr><td colspan="3" class="text-center py-4">Loading...</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../js/api.js"></script>
+  <script src="../js/utils.js"></script>
+  <script>
+    // Ensure login
+    const session = utils.getSession();
+    if (!session) window.location.href = '../index.html';
+
+    // UI Updates
+    document.getElementById('userNameDisplay').textContent = 'Welcome';
+    if (session.isExpired) document.getElementById('expiryWarning').classList.remove('d-none');
+    
+    if (session.isSuperAdmin) {
+      const link = `<a href="superadmin.html" class="nav-link text-warning"><i class="fas fa-user-shield"></i> Super Admin</a>`;
+      document.getElementById('superAdminLink').innerHTML = link;
+      document.getElementById('superAdminLinkMobile').innerHTML = link;
+    }
+
+    // Load Stats
+    async function loadDashboard() {
+      try {
+        const stats = await api.get('dashboard');
+        
+        document.getElementById('statMembers').textContent = stats.totalMembers;
+        document.getElementById('statPayments').textContent = utils.formatCurrency(stats.totalPayments);
+        document.getElementById('statExpenses').textContent = utils.formatCurrency(stats.totalExpenses);
+        document.getElementById('statBalance').textContent = utils.formatCurrency(stats.balance);
+        
+        // Render Recent Tables
+        renderTable('recentPaymentsTable', stats.recentPayments, (row) => `
+          <td>${utils.formatDate(row.date)}</td>
+          <td class="text-success fw-bold">${utils.formatCurrency(row.amount)}</td>
+          <td>${row.type}</td>
+        `);
+        
+        renderTable('recentExpensesTable', stats.recentExpenses, (row) => `
+          <td>${utils.formatDate(row.date)}</td>
+          <td class="text-danger fw-bold">${utils.formatCurrency(row.amount)}</td>
+          <td>${row.title}</td>
+        `);
+        
+      } catch (err) {
+        utils.showToast('Failed to load dashboard data', 'danger');
+      }
+    }
+
+    function renderTable(tableId, data, rowMapper) {
+      const tbody = document.querySelector(`#${tableId} tbody`);
+      if (!data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4">No recent records</td></tr>';
+        return;
+      }
+      tbody.innerHTML = data.map(row => `<tr>${rowMapper(row)}</tr>`).join('');
+    }
+
+    loadDashboard();
+  </script>
+</body>
+</html>

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Members - Mahall Management</title>
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+  <div class="app-wrapper">
+    <!-- Sidebar (Same as dashboard) -->
+    <aside class="sidebar" id="sidebar">
+      <div class="d-flex align-items-center mb-4">
+        <i class="fas fa-mosque fa-2x text-primary me-2"></i>
+        <h4 class="fw-bold mb-0">MAHALL</h4>
+      </div>
+      <nav class="nav flex-column">
+        <a href="dashboard.html" class="nav-link"><i class="fas fa-chart-line"></i> Dashboard</a>
+        <a href="members.html" class="nav-link active"><i class="fas fa-users"></i> Members</a>
+        <a href="payments.html" class="nav-link"><i class="fas fa-hand-holding-dollar"></i> Payments</a>
+        <a href="expenses.html" class="nav-link"><i class="fas fa-file-invoice-dollar"></i> Expenses</a>
+        <a href="settings.html" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+        <div id="superAdminLink"></div>
+      </nav>
+      <hr class="my-4 opacity-10">
+      <button class="btn btn-outline-danger w-100" onclick="utils.logout()"><i class="fas fa-sign-out-alt me-2"></i> Logout</button>
+    </aside>
+
+    <main class="main-content">
+      <div class="d-flex align-items-center mb-4">
+        <h4 class="fw-bold mb-0">Members</h4>
+        <button class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#memberModal" onclick="openAddMember()">
+          <i class="fas fa-plus me-1"></i> Add
+        </button>
+      </div>
+
+      <!-- Mobile Bottom Nav -->
+      <div class="bottom-nav d-md-none">
+        <a href="dashboard.html" class="nav-link"><i class="fas fa-chart-line"></i> Dashboard</a>
+        <a href="members.html" class="nav-link active"><i class="fas fa-users"></i> Members</a>
+        <a href="payments.html" class="nav-link"><i class="fas fa-hand-holding-dollar"></i> Payments</a>
+        <a href="expenses.html" class="nav-link"><i class="fas fa-file-invoice-dollar"></i> Expenses</a>
+        <a href="settings.html" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+        <div id="superAdminLinkMobile"></div>
+      </div>
+
+      <!-- Expired Warning -->
+      <div id="expiryWarning" class="alert alert-warning d-none mb-4">
+        <i class="fas fa-exclamation-triangle me-2"></i> Your subscription has expired. Please contact support.
+      </div>
+
+      <!-- Search & Filters -->
+      <div class="card card-glass mb-4 p-3 d-flex flex-row gap-3">
+        <div class="input-group">
+          <span class="input-group-text bg-transparent border-end-0"><i class="fas fa-search text-muted"></i></span>
+          <input type="text" id="memberSearch" class="form-control border-start-0" placeholder="Search by name, house name or phone..." oninput="filterMembers()">
+        </div>
+        <select class="form-select w-auto" id="memberStatusFilter" onchange="filterMembers()">
+          <option value="all">All Status</option>
+          <option value="active">Active Only</option>
+          <option value="inactive">Inactive Only</option>
+        </select>
+      </div>
+
+      <!-- Members Table -->
+      <div class="card card-glass overflow-hidden px-0">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0" id="membersTable">
+            <thead class="bg-light">
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>House Name</th>
+                <th>Phone</th>
+                <th>Status</th>
+                <th class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="6" class="text-center py-5">Loading members...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Member Modal (Add/Edit) -->
+  <div class="modal fade" id="memberModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content card-glass">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold" id="modalTitle">Add New Member</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form id="memberForm">
+          <div class="modal-body">
+            <input type="hidden" id="memberId">
+            <div class="mb-3">
+              <label class="form-label">Full Name</label>
+              <input type="text" id="memberName" class="form-control" placeholder="Enter name" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">House Name</label>
+              <input type="text" id="memberHouse" class="form-control" placeholder="Enter house name" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Phone Number</label>
+              <input type="tel" id="memberPhone" class="form-control" placeholder="Enter phone" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Status</label>
+              <select id="memberStatus" class="form-select">
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer border-0">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="saveMemberBtn">
+              <span class="spinner-border spinner-border-sm d-none" id="saveSpinner"></span>
+              Save Member
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Member Payments History Modal -->
+  <div class="modal fade" id="memberPaymentsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content card-glass">
+        <div class="modal-header border-0">
+          <h5 class="modal-title fw-bold"><i class="fas fa-history me-2 text-info"></i>History: <span id="historyMemberName"></span></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="historyTable">
+              <thead class="bg-light small text-muted">
+                <tr>
+                  <th>DATE</th>
+                  <th>AMOUNT</th>
+                  <th>TYPE</th>
+                  <th>NOTE</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td colspan="4" class="text-center py-5">Select a member to view history.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/utils.js"></script>
+  <script>
+    let allMembers = [];
+
+    const session = utils.getSession();
+    if (!session) window.location.href = '../index.html';
+
+    if (session.isSuperAdmin) {
+      const link = `<a href="superadmin.html" class="nav-link text-warning"><i class="fas fa-user-shield"></i> SA</a>`;
+      document.getElementById('superAdminLink').innerHTML = link.replace('SA', 'Super Admin');
+      document.getElementById('superAdminLinkMobile').innerHTML = link;
+    }
+    
+    if (session.isExpired) {
+      document.getElementById('expiryWarning').classList.remove('d-none');
+      // Disable core actions
+      const addBtn = document.querySelector('button[data-bs-target="#memberModal"]');
+      if (addBtn) {
+        addBtn.disabled = true;
+        addBtn.title = 'Renew plan to add members';
+      }
+      const saveBtn = document.getElementById('saveMemberBtn');
+      if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<i class="fas fa-lock me-2"></i>Renew Plan to Save';
+      }
+    }
+
+    async function loadMembers() {
+      try {
+        allMembers = await api.get('members');
+        renderMembers(allMembers);
+      } catch (err) {
+        utils.showToast('Failed to load members', 'danger');
+      }
+    }
+
+    function renderMembers(members) {
+      const tbody = document.querySelector('#membersTable tbody');
+      if (members.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5">No members found.</td></tr>';
+        return;
+      }
+      
+      const isBlocked = session.isExpired && !session.isSuperAdmin;
+      tbody.innerHTML = members.map(m => `
+        <tr>
+          <td class="small text-muted">${m.id.substring(0, 8)}</td>
+          <td><div class="fw-bold">${m.name}</div></td>
+          <td>${m.house_name}</td>
+          <td>${m.phone}</td>
+          <td><span class="badge bg-${m.status === 'active' ? 'success' : 'danger'} rounded-pill">${m.status}</span></td>
+          <td class="text-end">
+            <button class="btn btn-sm btn-outline-info me-2" title="Payment History" onclick="viewMemberHistory('${m.id}', '${m.name}')"><i class="fas fa-history"></i></button>
+            <button class="btn btn-sm btn-outline-primary me-2" ${isBlocked ? 'disabled title="Plan Expired"' : ''} onclick="openEditMember('${m.id}')"><i class="fas fa-edit"></i></button>
+            <button class="btn btn-sm btn-outline-danger" ${isBlocked ? 'disabled title="Plan Expired"' : ''} onclick="deleteMember('${m.id}')"><i class="fas fa-trash"></i></button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function filterMembers() {
+      const q = document.getElementById('memberSearch').value.toLowerCase();
+      const s = document.getElementById('memberStatusFilter').value;
+      
+      const filtered = allMembers.filter(m => {
+        const name = (m.name || '').toString().toLowerCase();
+        const phone = (m.phone || '').toString().toLowerCase();
+        const house = (m.house_name || '').toString().toLowerCase();
+        
+        const matchesQ = name.includes(q) || phone.includes(q) || house.includes(q);
+        const matchesS = s === 'all' || m.status === s;
+        return matchesQ && matchesS;
+      });
+      
+      renderMembers(filtered);
+    }
+
+    // Modal Interaction
+    const memberModal = new bootstrap.Modal(document.getElementById('memberModal'));
+    const memberForm = document.getElementById('memberForm');
+
+    function openAddMember() {
+      document.getElementById('modalTitle').textContent = 'Add New Member';
+      memberForm.reset();
+      document.getElementById('memberId').value = '';
+    }
+
+    function openEditMember(id) {
+      const m = allMembers.find(member => member.id === id);
+      document.getElementById('modalTitle').textContent = 'Edit Member';
+      document.getElementById('memberId').value = m.id;
+      document.getElementById('memberName').value = m.name;
+      document.getElementById('memberHouse').value = m.house_name;
+      document.getElementById('memberPhone').value = m.phone;
+      document.getElementById('memberStatus').value = m.status;
+      memberModal.show();
+    }
+
+    memberForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('memberId').value;
+      const data = {
+        id: id || undefined,
+        org_id: localStorage.getItem('org_id'),
+        name: document.getElementById('memberName').value,
+        house_name: document.getElementById('memberHouse').value,
+        phone: document.getElementById('memberPhone').value,
+        status: document.getElementById('memberStatus').value
+      };
+
+      document.getElementById('saveSpinner').classList.remove('d-none');
+      document.getElementById('saveMemberBtn').disabled = true;
+
+      try {
+        const action = id ? 'editMember' : 'addMember';
+        const res = await api.post(action, data);
+        if (res.success) {
+          utils.showToast(`Member ${id ? 'updated' : 'added'} successfully!`);
+          memberModal.hide();
+          loadMembers();
+        }
+      } catch (err) {
+        utils.showToast('Failed to save member', 'danger');
+      } finally {
+        document.getElementById('saveSpinner').classList.add('d-none');
+        document.getElementById('saveMemberBtn').disabled = false;
+      }
+    });
+
+    async function deleteMember(id) {
+      if (!confirm('Are you sure you want to delete this member?')) return;
+      try {
+        await api.post('deleteMember', { id });
+        utils.showToast('Member deleted');
+        loadMembers();
+      } catch (err) {
+        utils.showToast('Delete failed', 'danger');
+      }
+    }
+
+    async function viewMemberHistory(memberId, name) {
+      document.getElementById('historyMemberName').textContent = name;
+      const tbody = document.querySelector('#historyTable tbody');
+      tbody.innerHTML = '<tr><td colspan="4" class="text-center py-5"><span class="spinner-border spinner-border-sm me-2"></span>Loading payment history...</td></tr>';
+      
+      const historyModal = new bootstrap.Modal(document.getElementById('memberPaymentsModal'));
+      historyModal.show();
+
+      try {
+        const allPayments = await api.get('payments');
+        const memberPayments = allPayments.filter(p => p.member_id === memberId);
+        
+        if (memberPayments.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4" class="text-center py-5">No payment history found for this member.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = memberPayments.sort((a,b) => new Date(b.date) - new Date(a.date)).map(p => `
+          <tr>
+            <td>${utils.formatDate(p.date)}</td>
+            <td class="fw-bold text-success">${utils.formatCurrency(p.amount)}</td>
+            <td><span class="badge bg-light text-dark border">${p.type}</span></td>
+            <td class="small text-muted">${p.note || '-'}</td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center py-5 text-danger">Failed to load payment history.</td></tr>';
+      }
+    }
+
+    loadMembers();
+  </script>
+</body>
+</html>
