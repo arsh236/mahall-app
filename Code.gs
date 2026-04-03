@@ -337,7 +337,9 @@ function handleRegister(data) {
 }
 
 function getDashboardStats(org_id) {
-  const members = getDataByOrgId('members', org_id).length;
+  const allMembers = getDataByOrgId('members', org_id);
+  const activeMembersCount = allMembers.filter(m => m.status === 'active').length;
+  
   const allPayments = getDataByOrgId('payments', org_id);
   const allExpenses = getDataByOrgId('expenses', org_id);
 
@@ -360,7 +362,7 @@ function getDashboardStats(org_id) {
   const totalExpenses = currentMonthExpenses.reduce((sum, e) => sum + Number(e.amount), 0);
 
   return {
-    totalMembers: members,
+    totalMembers: activeMembersCount,
     totalPayments: totalPayments,
     totalExpenses: totalExpenses,
     balance: totalPayments - totalExpenses,

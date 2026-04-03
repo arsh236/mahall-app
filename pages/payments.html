@@ -66,11 +66,12 @@
 
       <!-- Mobile Bottom Nav -->
       <div class="bottom-nav d-md-none">
-        <a href="dashboard.html" class="nav-link"><i class="fas fa-chart-line"></i> Dashboard</a>
-        <a href="members.html" class="nav-link"><i class="fas fa-users"></i> Members</a>
-        <a href="payments.html" class="nav-link active"><i class="fas fa-hand-holding-dollar"></i> Payments</a>
-        <a href="expenses.html" class="nav-link"><i class="fas fa-file-invoice-dollar"></i> Expenses</a>
-        <a href="settings.html" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+        <a href="dashboard.html" class="nav-link"><i class="fas fa-chart-line"></i> Dash</a>
+        <a href="members.html" class="nav-link"><i class="fas fa-users"></i> Member</a>
+        <a href="payments.html" class="nav-link active"><i class="fas fa-hand-holding-dollar"></i> Pay</a>
+        <a href="expenses.html" class="nav-link"><i class="fas fa-file-invoice-dollar"></i> Exp</a>
+        <a href="settings.html" class="nav-link"><i class="fas fa-cog"></i> Gear</a>
+        <a href="#" class="nav-link text-danger" onclick="utils.logout()"><i class="fas fa-sign-out-alt"></i> Exit</a>
         <div id="superAdminLinkMobile"></div>
       </div>
 
@@ -272,10 +273,12 @@
         
         allPayments = payments.reverse();
         members.forEach(m => memberMap[m.id] = m);
+
+        const activeMembers = members.filter(m => m.status === 'active');
         
         const select = document.getElementById('payMemberId');
         select.innerHTML = '<option value="">Select Member</option>' + 
-          members.map(m => `<option value="${m.id}">${m.name} (${m.house_name})</option>`).join('');
+          activeMembers.map(m => `<option value="${m.id}">${m.name} (${m.house_name})</option>`).join('');
           
         if (!memberSelect) {
           memberSelect = new TomSelect('#payMemberId', {
@@ -285,7 +288,7 @@
           });
         } else {
           memberSelect.clearOptions();
-          memberSelect.addOptions(members.map(m => ({ value: m.id, text: `${m.name} (${m.house_name})` })));
+          memberSelect.addOptions(activeMembers.map(m => ({ value: m.id, text: `${m.name} (${m.house_name})` })));
           memberSelect.refreshOptions(false);
         }
           

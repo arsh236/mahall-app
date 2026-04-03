@@ -2,7 +2,7 @@
  * Mahall Management API Handler (FETCH wrapper)
  */
 
-const API_URL = 'https://script.google.com/macros/s/AKfycbxvfZX-FH_-sPWtW9bz3BPLN28K3IzAlkdS7z3SkZu177ViKHYMz38_KEFMXfHEezNZzg/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbzXbQIVwDt9c7YYsKs5KUYa4ByoZ7yoi-S2jeNGKyPn4jVftwAun1vaXOTCDk1BXovoeQ/exec';
 
 const api = {
   /**
